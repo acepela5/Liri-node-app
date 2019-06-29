@@ -19,13 +19,7 @@ var getMeBands = function(artist="pink"){
 // spotify
 var spotify = new Spotify(keys.spotify);
 
-// spotify.search({ type: 'track', query: 'All the Small Things' }, function(err, data) {
-//     if (err) {
-//       return console.log('Error occurred: ' + err);
-//     }
-   
-//   console.log(data); 
-//   });
+
 
 var getArtistNames = function(artist) {
     return artist.name;
@@ -54,22 +48,40 @@ var getMeSpotify = function(songName) {
 
 // movie omdb
 var getMeMovie = function(movieName) {
-
-    omdb.search(movieName, function(error, responses){
-        console.log(error);
-        console.log(responses);
-        // console.log('Title: ' + responses.data[0].title);
-        // console.log('Year: ' + jsonData.Year);
-        // console.log('Rated: ' + jsonData.Rated);
-        // console.log('IMDB Rating: ' + jsonData.imdbRating);
-        // console.log('Country: ' + jsonData.Country);
-        // console.log('Language: ' + jsonData.Language);
-        // console.log('Plot: ' + jsonData.Plot);
-        // console.log('Actors: ' + jsonData.Actors);
-        // console.log('Rotten tomatoes rating: ' + jsonData.tomatoRating);
-        // console.log('Rotten tomatoes URL: ' + jsonData.tomatoURL);
-        
+    axios.get("http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy").then(function(response){
+        console.log(response.data);
+        console.log(`Title: ${response.data.Title}`)
     })
+
+    
+    
+    // omdb.search(movieName, function(err, movies){
+    //     console.log(movieName);
+
+
+    //     if(err){
+    //         return console.log(err);
+    //     }
+    //     if(movies.length<1) {
+    //         return console.log('No movies were found');
+    //     }
+    //     movies.forEach(function(movie){
+    //         console.log('%s (%d)', movie.title, movie.year)
+    //     })
+    //     // console.log(err);
+    //     // console.log(movie.title);
+    //     // console.log('Title: ' + responses.data[0].title);
+    //     // console.log('Year: ' + jsonData.Year);
+    //     // console.log('Rated: ' + jsonData.Rated);
+    //     // console.log('IMDB Rating: ' + jsonData.imdbRating);
+    //     // console.log('Country: ' + jsonData.Country);
+    //     // console.log('Language: ' + jsonData.Language);
+    //     // console.log('Plot: ' + jsonData.Plot);
+    //     // console.log('Actors: ' + jsonData.Actors);
+    //     // console.log('Rotten tomatoes rating: ' + jsonData.tomatoRating);
+    //     // console.log('Rotten tomatoes URL: ' + jsonData.tomatoURL);
+        
+    // })
 }
 
 var doWhatItSays = function() {
