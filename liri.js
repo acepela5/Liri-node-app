@@ -89,7 +89,7 @@ var doWhatItSays = function() {
 // uses user input to 
 var pick = function(caseData, functionData) {
     switch(caseData) {
-        case 'bands-this-band' :
+        case 'concert-this' :
             getMeBands(functionData);
             break;
         case 'spotify-this-song':
@@ -109,7 +109,7 @@ var pick = function(caseData, functionData) {
 var runThis = function(argOne, argTwo) {
     pick(argOne, argTwo);
 };
-
+// splice to add more words
 runThis(process.argv[2], process.argv[3]);
 
 
