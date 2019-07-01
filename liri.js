@@ -21,11 +21,13 @@ var nodeArgs = process.argv;
 // bandsintown
 var getMeBands = function(artist="pink"){
  axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp").then(function(response){
-     console.log(
+    var concertDate = response.data[0].datetime;
+    
+ console.log(
         `--------------------------------
 Venue: ${response.data[0].venue.name}
 Venue Location: ${response.data[0].venue.city}, ${response.data[0].venue.country}
-Date of the Event: ${response.data[0].datetime}`);
+Date of the Event: ${moment(concertDate).format('dddd, MMMM Do YYYY, h:mm:ss a')}`);
  })
 
 }
