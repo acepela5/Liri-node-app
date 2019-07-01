@@ -1,5 +1,8 @@
 require("dotenv").config();
 
+var moment = require('moment');
+moment().format();
+
 var keys = require("./keys.js");
 
 var Spotify = require('node-spotify-api');
@@ -8,18 +11,27 @@ var axios = require("axios");
 
 var omdb = require('omdb');
 
+var fs = require("fs");
+
+var text = (process.argv[2] +" "+ process.argv[3]);
+
+var movieName = "";
+var nodeArgs = process.argv;
+
 // bandsintown
 var getMeBands = function(artist="pink"){
  axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp").then(function(response){
-     console.log(response.data[0]);
+     console.log(
+        `--------------------------------
+Venue: ${response.data[0].venue.name}
+Venue Location: ${response.data[0].venue.city}, ${response.data[0].venue.country}
+Date of the Event: ${response.data[0].datetime}`);
  })
 
 }
 
 // spotify
 var spotify = new Spotify(keys.spotify);
-
-
 
 var getArtistNames = function(artist) {
     return artist.name;
@@ -35,54 +47,42 @@ var getMeSpotify = function(songName) {
         
         var songs = data.tracks.items
         for(var i=0; i<songs.length; i++){
-            console.log(i);
-            console.log('artist(s): ' + songs[i].artists.map(getArtistNames));
-            console.log('song name: ' + songs[i].name);
-            console.log('preview song: ' + songs[i].preview_url);
-            console.log('album: ' + songs[i].album.name);
-            console.log('----------------------------');
+            console.log(
+            `${i}
+    Artist(s): ${songs[i].artists.map(getArtistNames)}         
+    Song Name: ${songs[i].name}
+    Preview Song: ${songs[i].preview_url}
+    Album: ${songs[i].album.name}
+    ----------------------------`);
         }
 
 });
 }
 
+for (var i = 2; i < nodeArgs.length; i++) {
+    if(i > 2 && i < nodeArgs.length) {
+        movieName = movieName + "+" + nodeArgs[i];
+    }
+    else{
+        movieName += nodeArgs[i];
+    }
+}
+
 // movie omdb
 var getMeMovie = function(movieName) {
     axios.get("http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy").then(function(response){
-        console.log(response.data);
-        console.log(`Title: ${response.data.Title}`)
+    console.log(
+`Title: ${response.data.Title}
+Year: ${response.data.Year}
+Rated: ${response.data.Rated}
+IMDB Rating: ${response.data.imdbRating}
+Rotten Tomatoes Rating: ${response.data.Ratings[1].Value}
+Country: ${response.data.Country}
+Language: ${response.data.Language}
+Plot: ${response.data.Plot}
+Actors: ${response.data.Actors}`)
     })
-
-    
-    
-    // omdb.search(movieName, function(err, movies){
-    //     console.log(movieName);
-
-
-    //     if(err){
-    //         return console.log(err);
-    //     }
-    //     if(movies.length<1) {
-    //         return console.log('No movies were found');
-    //     }
-    //     movies.forEach(function(movie){
-    //         console.log('%s (%d)', movie.title, movie.year)
-    //     })
-    //     // console.log(err);
-    //     // console.log(movie.title);
-    //     // console.log('Title: ' + responses.data[0].title);
-    //     // console.log('Year: ' + jsonData.Year);
-    //     // console.log('Rated: ' + jsonData.Rated);
-    //     // console.log('IMDB Rating: ' + jsonData.imdbRating);
-    //     // console.log('Country: ' + jsonData.Country);
-    //     // console.log('Language: ' + jsonData.Language);
-    //     // console.log('Plot: ' + jsonData.Plot);
-    //     // console.log('Actors: ' + jsonData.Actors);
-    //     // console.log('Rotten tomatoes rating: ' + jsonData.tomatoRating);
-    //     // console.log('Rotten tomatoes URL: ' + jsonData.tomatoURL);
-        
-    // })
-}
+};
 
 var doWhatItSays = function() {
     fs.readFile('random.txt', 'utf8', function(err, data){
@@ -98,7 +98,7 @@ var doWhatItSays = function() {
      }
 });
 }
-// uses user input to 
+// uses user input to create searches
 var pick = function(caseData, functionData) {
     switch(caseData) {
         case 'concert-this' :
@@ -121,11 +121,18 @@ var pick = function(caseData, functionData) {
 var runThis = function(argOne, argTwo) {
     pick(argOne, argTwo);
 };
-// splice to add more words
+
 runThis(process.argv[2], process.argv[3]);
+// splice to add more words
 
-
-
+fs.appendFile("userHistory.txt", text, function(err) {
+    if (err) {
+        console.log(err);
+    }
+    else {
+        console.log("Search Added");
+    }
+});
 
 
 
