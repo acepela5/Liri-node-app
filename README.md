@@ -26,6 +26,9 @@ With the last option, the program will run any commands written in the random.tx
 
 ![](/Screenshot(39).png)
 
+## How To Use Liri
+
+https://youtu.be/iqaOUM0scYI
 
 ## Comments
 
