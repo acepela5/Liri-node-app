@@ -16,7 +16,14 @@ var fs = require("fs");
 // bandsintown
 var getMeBands = function(artist){
  axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp").then(function(response){
-    var concertDate = response.data[0].datetime;
+    
+//  console.log(response)
+ if(response.data.includes("warn")){
+        console.log("No upcoming concerts. Try a different musician!")
+       
+    }   
+ 
+ else{   var concertDate = response.data[0].datetime;
     
     var concertInfo = 
 `--------------------------------
@@ -26,8 +33,8 @@ Date of the Event: ${moment(concertDate).format('dddd, MMMM Do YYYY, h:mm:ss a')
  
 datalog("Concert Searched", artist , concertInfo)    
 console.log(concertInfo);
+}
  })
-
 }
 
 
@@ -36,8 +43,9 @@ var getArtistNames = function(artist) {
     return artist.name;
 }
 
+// spotify
 var getMeSpotify = function(songName) {
-    // spotify
+    
 var spotify = new Spotify(keys.spotify);
 
     spotify.search({ type: 'track', query: songName }, function(err, data) {
@@ -59,9 +67,7 @@ Album: ${songs[i].album.name}
 
             datalog("Song Searched", songName , songInfo)    
             console.log(songInfo);
-
         }
-
 });
 }
 
@@ -84,6 +90,7 @@ Actors: ${response.data.Actors}`
     })
 };
 
+// read the random.txt file and perform what it says
 var doWhatItSays = function() {
 
     fs.readFile("random.txt", "utf8", function(err, data){
