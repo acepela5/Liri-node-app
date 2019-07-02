@@ -24,7 +24,7 @@ With the last option, the program will run any commands written in the random.tx
 - Bands In Town Api
 ## Screenshot
 
-![](/Screenshot(39).png)
+![](/Screenshot (39).png)
 
 
 ## Comments
