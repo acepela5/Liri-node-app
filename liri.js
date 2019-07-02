@@ -13,33 +13,32 @@ var omdb = require('omdb');
 
 var fs = require("fs");
 
-var text = (process.argv[2] +" "+ process.argv[3]);
-
-var movieName = "";
-var nodeArgs = process.argv;
-
 // bandsintown
-var getMeBands = function(artist="pink"){
+var getMeBands = function(artist){
  axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp").then(function(response){
     var concertDate = response.data[0].datetime;
     
- console.log(
-        `--------------------------------
+    var concertInfo = 
+`--------------------------------
 Venue: ${response.data[0].venue.name}
 Venue Location: ${response.data[0].venue.city}, ${response.data[0].venue.country}
-Date of the Event: ${moment(concertDate).format('dddd, MMMM Do YYYY, h:mm:ss a')}`);
+Date of the Event: ${moment(concertDate).format('dddd, MMMM Do YYYY, h:mm:ss a')}`
+ 
+datalog("Concert Searched", artist , concertInfo)    
+console.log(concertInfo);
  })
 
 }
 
-// spotify
-var spotify = new Spotify(keys.spotify);
+
 
 var getArtistNames = function(artist) {
     return artist.name;
 }
 
 var getMeSpotify = function(songName) {
+    // spotify
+var spotify = new Spotify(keys.spotify);
 
     spotify.search({ type: 'track', query: songName }, function(err, data) {
         if (err) {
@@ -49,56 +48,58 @@ var getMeSpotify = function(songName) {
         
         var songs = data.tracks.items
         for(var i=0; i<songs.length; i++){
-            console.log(
-            `${i}
-    Artist(s): ${songs[i].artists.map(getArtistNames)}         
-    Song Name: ${songs[i].name}
-    Preview Song: ${songs[i].preview_url}
-    Album: ${songs[i].album.name}
-    ----------------------------`);
+
+            var songInfo = 
+`${i}
+Artist(s): ${songs[i].artists.map(getArtistNames)}         
+Song Name: ${songs[i].name}
+Preview Song: ${songs[i].preview_url}
+Album: ${songs[i].album.name}
+----------------------------`
+
+            datalog("Song Searched", songName , songInfo)    
+            console.log(songInfo);
+
         }
 
 });
 }
 
-for (var i = 2; i < nodeArgs.length; i++) {
-    if(i > 2 && i < nodeArgs.length) {
-        movieName = movieName + "+" + nodeArgs[i];
-    }
-    else{
-        movieName += nodeArgs[i];
-    }
-}
-
 // movie omdb
 var getMeMovie = function(movieName) {
     axios.get("http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy").then(function(response){
-    console.log(
-`Title: ${response.data.Title}
+
+    var movieInfo = 
+`Title: ${response.data.Title}  
 Year: ${response.data.Year}
 Rated: ${response.data.Rated}
 IMDB Rating: ${response.data.imdbRating}
-Rotten Tomatoes Rating: ${response.data.Ratings[1].Value}
+Rotten Tomatoes Rating: ${response.data.Ratings[0].Value}
 Country: ${response.data.Country}
 Language: ${response.data.Language}
 Plot: ${response.data.Plot}
-Actors: ${response.data.Actors}`)
+Actors: ${response.data.Actors}`
+    datalog("Movie Searched", movieName, movieInfo)    
+    console.log(movieInfo)
     })
 };
 
 var doWhatItSays = function() {
-    fs.readFile('random.txt', 'utf8', function(err, data){
-     if (err) throw err;
 
-     var dataArr = data.split(',');
+    fs.readFile("random.txt", "utf8", function(err, data){
+
+        var dataArr = data.split(',');
 
      if (dataArr.length === 2) {
+         console.log(dataArr)
          pick(dataArr[0], dataArr[1]);
      }
      else if (dataArr.length === 1) {
          pick(dataArr[0]);
      }
+  
 });
+
 }
 // uses user input to create searches
 var pick = function(caseData, functionData) {
@@ -118,23 +119,28 @@ var pick = function(caseData, functionData) {
         default:
         console.log('LIRI does not know that');
     }
+
+   
+
 }
+
+function datalog(oper, key, data){
+ 
+     fs.appendFile("log.txt", oper + ":" + key +  "\n" + data + "\n", function(err) {
+         if (err) {
+             console.log(err);
+         }
+     });
+ }
 
 var runThis = function(argOne, argTwo) {
     pick(argOne, argTwo);
+
 };
 
-runThis(process.argv[2], process.argv[3]);
-// splice to add more words
 
-fs.appendFile("userHistory.txt", text, function(err) {
-    if (err) {
-        console.log(err);
-    }
-    else {
-        console.log("Search Added");
-    }
-});
+runThis(process.argv[2], process.argv.slice(3).join(" "));
+
 
 
 
