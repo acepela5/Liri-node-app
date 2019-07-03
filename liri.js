@@ -14,16 +14,16 @@ var omdb = require('omdb');
 var fs = require("fs");
 
 // bandsintown
-var getMeBands = function(artist){
+var getMeBands = function(artist){ 
+
  axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp").then(function(response){
     
-//  console.log(response)
- if(response.data.includes("warn")){
-        console.log("No upcoming concerts. Try a different musician!")
-       
-    }   
- 
- else{   var concertDate = response.data[0].datetime;
+//  if there are no upcoming concerts, user will be told to search a different musician 
+if(response.data.includes("warn")) {
+    console.log("No upcoming concerts. Try a different musician!")
+}
+else{
+    var concertDate = response.data[0].datetime;
     
     var concertInfo = 
 `--------------------------------
@@ -35,25 +35,24 @@ datalog("Concert Searched", artist , concertInfo)
 console.log(concertInfo);
 }
  })
-}
+};
 
 
-
+// spotify
 var getArtistNames = function(artist) {
     return artist.name;
 }
 
-// spotify
 var getMeSpotify = function(songName) {
-    
 var spotify = new Spotify(keys.spotify);
-
+if(!songName){
+    songName = "The Sign"
+}
     spotify.search({ type: 'track', query: songName }, function(err, data) {
         if (err) {
             console.log('Error occurred: ' + err);
-            return;
         }
-        
+        else{
         var songs = data.tracks.items
         for(var i=0; i<songs.length; i++){
 
@@ -68,11 +67,15 @@ Album: ${songs[i].album.name}
             datalog("Song Searched", songName , songInfo)    
             console.log(songInfo);
         }
+    }
 });
 }
 
 // movie omdb
 var getMeMovie = function(movieName) {
+    if(!process.argv[3]){
+   movieName = "Mr. Nobody"}
+
     axios.get("http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy").then(function(response){
 
     var movieInfo = 
@@ -85,7 +88,9 @@ Country: ${response.data.Country}
 Language: ${response.data.Language}
 Plot: ${response.data.Plot}
 Actors: ${response.data.Actors}`
-    datalog("Movie Searched", movieName, movieInfo)    
+
+
+datalog("Movie Searched", movieName, movieInfo)    
     console.log(movieInfo)
     })
 };
@@ -126,9 +131,6 @@ var pick = function(caseData, functionData) {
         default:
         console.log('LIRI does not know that');
     }
-
-   
-
 }
 
 function datalog(oper, key, data){
@@ -144,7 +146,6 @@ var runThis = function(argOne, argTwo) {
     pick(argOne, argTwo);
 
 };
-
 
 runThis(process.argv[2], process.argv.slice(3).join(" "));
 
